@@ -20,9 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7638ce6-689f-4dad-b294-7fabaac0a0e7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/clj/samplethree/routes/services.clj" beforeDir="false" afterPath="$PROJECT_DIR$/src/clj/samplethree/routes/services.clj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cljs/samplethree/core.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cljs/samplethree/core.cljs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cljs/samplethree/events.cljs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cljs/samplethree/events.cljs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-config.edn" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test-config.edn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/samplethree.log" beforeDir="false" afterPath="$PROJECT_DIR$/log/samplethree.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/default/classes/META-INF/maven/samplethree/samplethree/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/default/classes/META-INF/maven/samplethree/samplethree/pom.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,12 +42,15 @@
     </option>
   </component>
   <component name="ProjectId" id="1fgC8P9lY9aXiyWXTRrw87nQl0p" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/resources/public/css" />
@@ -100,6 +105,9 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="386" y="164" key="#Notifications" timestamp="1596630332941">

@@ -1,0 +1,14 @@
+2020-08-10 13:17:08,186 [main] INFO  samplethree.env - 
+-=[samplethree started successfully using the development profile]=- 
+2020-08-10 13:17:09,722 [main] DEBUG org.jboss.logging - Logging Provider: org.jboss.logging.Slf4jLoggerProvider 
+2020-08-10 13:17:09,759 [main] INFO  io.undertow - starting server: Undertow - 2.1.3.Final 
+2020-08-10 13:17:09,826 [main] INFO  org.xnio - XNIO version 3.8.0.Final 
+2020-08-10 13:17:10,302 [main] INFO  org.jboss.threads - JBoss Threads version 3.1.0.Final 
+2020-08-10 13:17:10,356 [main] DEBUG io.undertow - Configuring listener with protocol HTTP for interface 0.0.0.0 and port 3000 
+2020-08-10 13:17:10,449 [main] INFO  luminus.http-server - server started on port 3000 
+2020-08-10 13:17:10,450 [main] INFO  samplethree.nrepl - starting nREPL server on port 7000 
+2020-08-10 13:17:10,477 [main] INFO  samplethree.core - #'samplethree.config/env started 
+2020-08-10 13:17:10,478 [main] INFO  samplethree.core - #'samplethree.handler/init-app started 
+2020-08-10 13:17:10,479 [main] INFO  samplethree.core - #'samplethree.handler/app-routes started 
+2020-08-10 13:17:10,479 [main] INFO  samplethree.core - #'samplethree.core/http-server started 
+2020-08-10 13:17:10,480 [main] INFO  samplethree.core - #'samplethree.core/repl-server started 
