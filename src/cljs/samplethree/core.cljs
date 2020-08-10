@@ -39,7 +39,7 @@
 
  ;;(def calc-atom (r/atom {:x nil :y nil :result nil :op nil :color "#90EE90"}))
  (def ops {"+" "plus", "-" "minus", "*" "multiply", "/" "divide"})
- ;;(def equals "")
+ (def equals "")
 
 
  ;;(defn color [ref]
@@ -50,33 +50,36 @@
  ;;      :else  (swap! ref assoc :color "#FFA07A"))))
 
 
- ;;(defn handler [x]
- ;;  (swap! calc-atom assoc :result x)
- ;;  (color calc-atom))
+ (defn handler [x]
+   (rf/dispatch[:set-key :result x]))
+   ;;(swap! (@rf/subscribe[:x]) assoc :result x))
+  ;; (color (@rf/subscribe[:y])))
 
 
  (defn math []
-   ;;(cond
-   ;;  (nil? (:op @calc-atom)) (swap! calc-atom assoc :op "+")))
+   (cond
+     (nil? @(rf/subscribe[:op])) (rf/dispatch [:set-key :op "+"])))
 
    (POST (str "/api/math/" (get ops (@(rf/subscribe[:op])))
          {:headers {"Accept" "application/transit+json"}
-          :params {:x (:x @(rf/subscribe[:op])) :y (:y @calc-atom)}
+          :params {:x @(rf/subscribe[:x]) :y @(rf/subscribe[:y])}
           :handler #(handler (:total %))}))
 
 
- ;;(defn do-math [num]
- ;;  ((cond
- ;;     (and (nil? (:x @calc-atom))(nil? (:result @calc-atom))) (do(swap! calc-atom assoc :x num) (set! equals " = "))
- ;;     (and (nil? (:y @calc-atom))(nil? (:result @calc-atom))) (swap! calc-atom assoc :y num)
- ;;     :default (do(swap! calc-atom assoc :x (:result @calc-atom)) (swap! calc-atom assoc :y num)))
- ;;   (math)))
+ (defn do-math [num]
+   ((cond
+      (and (nil? @(rf/subscribe[:x])) (nil? @(rf/subscribe[:result]))) (do (rf/dispatch [:set-key :x num]) (set! equals " = "))
+      (and (nil? @(rf/subscribe[:y])) (nil? @(rf/subscribe[:result]))) (rf/dispatch [:set-key :y num])
+      :default (do (rf/dispatch [:set-key :x (rf/subscribe[:result])]) (rf/dispatch [:set-key :y num])))
+    (math)))
+
+   ;;(rf/dispatch [:set-key :x num])
 
 
  (defn make-calc-btns [num]
    [:button.button
     {:class "button is-info"
-     :on-click #(rf/dispatch [:num-button num])}
+     :on-click #(do-math[num])}
     num])
 
 
@@ -86,31 +89,31 @@
 
 (defn home-page []
      [:section.section>div.container>div.content
-      [:div#atomcalc.calc-size
+      [:div.calc-size
        (rf/dispatch-sync [:initialize])
        (make-calc)
-       [:button
-        {:class "button is-info"
-         :name "EQUALS"
-         :on-click #(rf/dispatch[:equals])} "="]
+       ;;[:button
+       ;; {:class "button is-info"
+       ;;  :name "EQUALS"
+       ;;  :on-click #(rf/dispatch[:equals])} "="]
        [:button
         {:class "button is-info"
          :name "RESET"
          :on-click #(rf/dispatch [:reset])} "RESET!"]
        [:button.button
         {:class "button is-primary"
-         :on-click #(rf/dispatch [:plus])} "+"]
+         :on-click #(rf/dispatch [:set-key :op "+"])} "+"]
        [:button.button
         {:class "button is-primary"
-         :on-click #(rf/dispatch [:minus])} "-"]
+         :on-click #(rf/dispatch [:set-key :op "-"])} "-"]
        [:button.button
         {:class "button is-primary"
-         :on-click #(rf/dispatch [:multiply])} "*"]
+         :on-click #(rf/dispatch [:set-key :op "*"])} "*"]
        [:button.button
         {:class "button is-primary"
-         :on-click #(rf/dispatch [:divide])} "/"]
+         :on-click #(rf/dispatch [:set-key :op "/"])} "/"]
        [:br]
-       [:span.calc-size.numbers {:style {:color @(rf/subscribe[:color])} } @(rf/subscribe[:equation])]]])
+       [:span.calc-size.numbers {:style {:color @(rf/subscribe[:get-color])} } @(rf/subscribe[:equation])]]])
 
 
 (defn page []

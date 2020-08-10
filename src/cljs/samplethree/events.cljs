@@ -39,30 +39,12 @@
      :result nil
      :color nil}))
 
+(rf/reg-event-db
+  :set-key
+  (fn [db [_ key val]]
+    (assoc db key val)))
+
 (rf/dispatch-sync [:initialize])
-
-(rf/reg-event-fx
-  ::http-post
-  (fn [_world [_ val]]
-    {:http-xhrio {:method          :post
-                  :uri             (str "/api/math/" (@(rf/subscribe[:op])))
-                  :params          :x, :y
-                  :timeout         5000
-                  :format          (ajax/json-request-format)
-                  :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success      [::success-post-result]
-                  :on-failure      [::failure-post-result]}}))
-
-(rf/reg-event-db
-  ::success-post-result
-  (fn [db [_ result]]
-    (assoc db :result total)))
-
-(rf/reg-event-db
-  ::failure-http-result
-  (fn [db [_ result]]
-    ;; result is a map containing details of the failure
-    (assoc db :failure-http-result result)))
 
 (rf/reg-event-db
   :reset
@@ -74,35 +56,13 @@
     (assoc db :color nil)))
 
 (rf/reg-event-db
-  :equals
-  (fn [_ _]
-    ::http-post)
+  :color
   (fn[db _ [_ result]]
       (let [x (-> result)]
         (cond
-          (< x 20) (swap! assoc :color "#90EE90")
-          (< x 50) (swap! assoc :color "#ADD8E6")
-          :else  (swap! assoc :color "#FFA07A")))))
-
-(rf/reg-event-db
-  :plus
-  (fn [db _]
-    (assoc db :op "plus")))
-
-(rf/reg-event-db
-  :minus
-  (fn [db _]
-    (assoc db :op "minus")))
-
-(rf/reg-event-db
-  :multiply
-  (fn [db _]
-    (assoc db :op "multiply")))
-
-(rf/reg-event-db
-  :divide
-  (fn [db _]
-    (assoc db :op "divide")))
+          (< x 20) (assoc db :color "#90EE90")
+          (< x 50) (assoc db :color "#ADD8E6")
+          :else    (assoc db :color "#FFA07A")))))
 
 
 
@@ -132,9 +92,14 @@
     (:common/error db)))
 
 (rf/reg-sub
-  :color
+  :get-color
   (fn [db _]
     (:color db)))
+
+(rf/reg-sub
+  :get-value
+  (fn [db key]
+    (key db)))
 
 (rf/reg-sub
   :equation
