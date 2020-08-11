@@ -26,38 +26,31 @@
     {:common/navigate-fx! [url-key params query]}))
 
 (rf/reg-event-db
-  :common/set-error
-  (fn [db [_ error]]
-    (assoc db :common/error error)))
-
-(rf/reg-event-db
   :initialize
-  (fn [_ _]
-    {:x nil
-     :y nil
-     :op nil
-     :result nil
-     :color nil}))
+  (fn [db _]
+    (assoc db :x 0
+              :y 0
+              :op "+"
+              :result 0
+              :color nil)))
 
 (rf/reg-event-db
   :set-key
   (fn [db [_ key val]]
     (assoc db key val)))
 
-(rf/dispatch-sync [:initialize])
-
 (rf/reg-event-db
   :reset
   (fn [db _]
-    (assoc db :x nil)
-    (assoc db :y nil)
-    (assoc db :op nil)
-    (assoc db :result nil)
-    (assoc db :color nil)))
+    (assoc db :x 0
+              :y 0
+              :op "+"
+              :result 0
+              :color nil)))
 
 (rf/reg-event-db
   :color
-  (fn[db _ [_ result]]
+  (fn[db [_ result]]
       (let [x (-> result)]
         (cond
           (< x 20) (assoc db :color "#90EE90")
@@ -91,6 +84,29 @@
   (fn [db _]
     (:common/error db)))
 
+(rf/reg-event-db
+  :set-docs
+  (fn [db [_ docs]]
+    (assoc db :docs docs)))
+
+(rf/reg-event-fx
+  :fetch-docs
+  (fn [_ _]
+    {:http-xhrio {:method          :get
+                  :uri             "/docs"
+                  :response-format (ajax/raw-response-format)
+                  :on-success       [:set-docs]}}))
+
+(rf/reg-event-db
+  :common/set-error
+  (fn [db [_ error]]
+    (assoc db :common/error error)))
+
+(rf/reg-event-fx
+  :page/init-home
+  (fn [_ _]
+    {:dispatch [:fetch-docs]}))
+
 (rf/reg-sub
   :get-color
   (fn [db _]
@@ -98,10 +114,10 @@
 
 (rf/reg-sub
   :get-value
-  (fn [db key]
+  (fn [db [_ key]]
     (key db)))
 
-(rf/reg-sub
-  :equation
-  (fn [db _]
-    ((str (:x db) " " (:op db) " " (:y db) (" = ") (:result db)))))
+;;(rf/reg-sub
+;;  :equation
+;;  (fn [db _]
+;;    ((str (:x db) " " (:op db) " " (:y db) (" = ") (:result db)))))

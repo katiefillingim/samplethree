@@ -1,6 +1,6 @@
 (ns samplethree.core
   (:require
-    [ajax.core :as ajax]
+    [ajax.core :refer [GET POST]]
     [day8.re-frame.http-fx]
     [reagent.dom :as rdom]
     [reagent.core :as r]
@@ -51,35 +51,39 @@
 
 
  (defn handler [x]
-   (rf/dispatch[:set-key :result x]))
-   ;;(swap! (@rf/subscribe[:x]) assoc :result x))
-  ;; (color (@rf/subscribe[:y])))
+   (prn "in handler" x)
+   (rf/dispatch[:set-key :result x])
+   (rf/dispatch[:color x]))
 
 
  (defn math []
-   (cond
-     (nil? @(rf/subscribe[:op])) (rf/dispatch [:set-key :op "+"])))
-
-   (POST (str "/api/math/" (get ops (@(rf/subscribe[:op])))
+   (prn "in math :x" @(rf/subscribe[:get-value :x]) " :y " @(rf/subscribe[:get-value :y]))
+        (POST (str "/api/math/" (get ops @(rf/subscribe[:get-value :op])))
          {:headers {"Accept" "application/transit+json"}
-          :params {:x @(rf/subscribe[:x]) :y @(rf/subscribe[:y])}
+          :params {:x @(rf/subscribe[:get-value :x]) :y @(rf/subscribe[:get-value :y])}
           :handler #(handler (:total %))}))
 
 
  (defn do-math [num]
    ((cond
-      (and (nil? @(rf/subscribe[:x])) (nil? @(rf/subscribe[:result]))) (do (rf/dispatch [:set-key :x num]) (set! equals " = "))
-      (and (nil? @(rf/subscribe[:y])) (nil? @(rf/subscribe[:result]))) (rf/dispatch [:set-key :y num])
-      :default (do (rf/dispatch [:set-key :x (rf/subscribe[:result])]) (rf/dispatch [:set-key :y num])))
-    (math)))
+      (and (= 0 @(rf/subscribe[:get-value :x]))
+           (= 0 @(rf/subscribe[:get-value :result])))
+      (do (rf/dispatch [:set-key :x num]) (set! equals " = "))
 
-   ;;(rf/dispatch [:set-key :x num])
+      (and (= 0 @(rf/subscribe[:get-value :y]))
+           (= 0 @(rf/subscribe[:get-value :result])))
+      (rf/dispatch [:set-key :y num])
+
+      :default (do (rf/dispatch [:set-key :x @(rf/subscribe[:get-value :result])])
+                   (rf/dispatch [:set-key :y num])))
+    (math)))
 
 
  (defn make-calc-btns [num]
    [:button.button
     {:class "button is-info"
-     :on-click #(do-math[num])}
+     :key num
+     :on-click #(do-math num)}
     num])
 
 
@@ -90,7 +94,6 @@
 (defn home-page []
      [:section.section>div.container>div.content
       [:div.calc-size
-       (rf/dispatch-sync [:initialize])
        (make-calc)
        ;;[:button
        ;; {:class "button is-info"
@@ -99,21 +102,28 @@
        [:button
         {:class "button is-info"
          :name "RESET"
+         :key "RESET"
          :on-click #(rf/dispatch [:reset])} "RESET!"]
        [:button.button
         {:class "button is-primary"
+         :key "plus"
          :on-click #(rf/dispatch [:set-key :op "+"])} "+"]
        [:button.button
         {:class "button is-primary"
+         :key "minus"
          :on-click #(rf/dispatch [:set-key :op "-"])} "-"]
        [:button.button
         {:class "button is-primary"
+         :key "multiply"
          :on-click #(rf/dispatch [:set-key :op "*"])} "*"]
        [:button.button
         {:class "button is-primary"
+         :key "divide"
          :on-click #(rf/dispatch [:set-key :op "/"])} "/"]
        [:br]
-       [:span.calc-size.numbers {:style {:color @(rf/subscribe[:get-color])} } @(rf/subscribe[:equation])]]])
+       [:span.calc-size.numbers {:style {:color @(rf/subscribe[:get-color])} }
+       ;; @(rf/subscribe[:equation])
+        ]]])
 
 
 (defn page []
@@ -128,8 +138,7 @@
 (def router
   (reitit/router
     [["/" {:name        :home
-           :view        #'home-page
-           :controllers [{:start (fn [_] (rf/dispatch [:page/init-home]))}]}]]))
+           :view        #'home-page}]]))
 
 (defn start-router! []
   (rfe/start!
@@ -146,4 +155,5 @@
 (defn init! []
   (start-router!)
   (ajax/load-interceptors!)
+  (rf/dispatch-sync [:initialize])
   (mount-components))
