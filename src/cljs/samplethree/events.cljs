@@ -32,7 +32,7 @@
               :y 0
               :op "+"
               :result 0
-              :color nil)))
+              :color "#90EE90")))
 
 (rf/reg-event-db
   :set-key
@@ -46,7 +46,7 @@
               :y 0
               :op "+"
               :result 0
-              :color nil)))
+              :color "#90EE90")))
 
 (rf/reg-event-db
   :color
@@ -117,7 +117,7 @@
   (fn [db [_ key]]
     (key db)))
 
-;;(rf/reg-sub
-;;  :equation
-;;  (fn [db _]
-;;    ((str (:x db) " " (:op db) " " (:y db) (" = ") (:result db)))))
+(rf/reg-sub
+  :equation
+  (fn [db _]
+    (str (:x db) " " (:op db) " " (:y db) " = " (:result db))))

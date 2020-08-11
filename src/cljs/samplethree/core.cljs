@@ -52,31 +52,37 @@
 
  (defn handler [x]
    (prn "in handler" x)
-   (rf/dispatch[:set-key :result x])
+   (rf/dispatch-sync[:set-key :result x])
    (rf/dispatch[:color x]))
 
 
- (defn math []
-   (prn "in math :x" @(rf/subscribe[:get-value :x]) " :y " @(rf/subscribe[:get-value :y]))
-        (POST (str "/api/math/" (get ops @(rf/subscribe[:get-value :op])))
-         {:headers {"Accept" "application/transit+json"}
-          :params {:x @(rf/subscribe[:get-value :x]) :y @(rf/subscribe[:get-value :y])}
-          :handler #(handler (:total %))}))
+ ;;(defn math []
+ ;;  (prn "in math :x" @(rf/subscribe[:get-value :x]) " :y " @(rf/subscribe[:get-value :y]))
+ ;;       (POST (str "/api/math/" (get ops @(rf/subscribe[:get-value :op])))
+ ;;        {:headers {"Accept" "application/transit+json"}
+ ;;         :params {:x @(rf/subscribe[:get-value :x]) :y @(rf/subscribe[:get-value :y])}
+ ;;         :handler #(handler (:total %))}))
+(defn math [x y]
+  (prn "in math :x" x " :y " y)
+  (POST (str "/api/math/" (get ops @(rf/subscribe[:get-value :op])))
+        {:headers {"Accept" "application/transit+json"}
+         :params {:x x :y y}
+         :handler #(handler (:total %))}))
 
 
  (defn do-math [num]
    ((cond
       (and (= 0 @(rf/subscribe[:get-value :x]))
            (= 0 @(rf/subscribe[:get-value :result])))
-      (do (rf/dispatch [:set-key :x num]) (set! equals " = "))
+      (do (rf/dispatch-sync [:set-key :x num]) (math num 0) (set! equals " = "))
 
       (and (= 0 @(rf/subscribe[:get-value :y]))
            (= 0 @(rf/subscribe[:get-value :result])))
-      (rf/dispatch [:set-key :y num])
+      (do (rf/dispatch-sync [:set-key :y num]) (math @(rf/subscribe[:get-value :x]) num))
 
       :default (do (rf/dispatch [:set-key :x @(rf/subscribe[:get-value :result])])
-                   (rf/dispatch [:set-key :y num])))
-    (math)))
+                   (rf/dispatch-sync [:set-key :y num]) (math @(rf/subscribe[:get-value :result]) num)))
+    ))
 
 
  (defn make-calc-btns [num]
@@ -122,7 +128,7 @@
          :on-click #(rf/dispatch [:set-key :op "/"])} "/"]
        [:br]
        [:span.calc-size.numbers {:style {:color @(rf/subscribe[:get-color])} }
-       ;; @(rf/subscribe[:equation])
+          @(rf/subscribe[:equation])
         ]]])
 
 
